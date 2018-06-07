@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="libs/jquery.min.js"></script>
+    </head>
+    <body>
+                <div id="workground" style="width: 1200px; height: 800px; position: fixed; top: 10px; left: 10px; background: blue;"></div>
+    </body>
+    <script src="js/drawApi5.js"></script>
+    <script src="js/nesw3.js"></script>
+<script>
+        var x = 1;
+        var firstUse = true;
+        var drawApi = new DrawApi();
+        var cnt = 0;
+        var shapes = drawApi.shapes;
+        var scale = 1; 
+        function draw (ctx) {
+           
+            if(firstUse) {
+                drawApi.init(ctx);               
+                var nesw = new NESW();
+                nesw.step = 50;
+               // nesw.dirs = ['NE', 'NW', 'NE', 'SE', 'E', 'E', 'NE', 'SE', 'SW', 'SE', 'SW', 'SE', 'SW', 'NW', 'W', 'W', 'SW', 'NW', 'NE', 'NW'];
+               // nesw.dirs = ['NE', 'NW', 'N', 'NE', 'E', 'SE', 'E', 'NE', 'SE', 'S', 'SW', 'SE', 'SW', 'SE', 'SW', 'NW', 'W', 'W', 'SW', 'NW', 'NE', 'NW'];
+                nesw.dirs = ['N', 'N', 'NE', 'NE', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'SE', 'S', 'S', 'S', 'W', 'W', 'W', 'NW', 'NW', 'SW', 'SW', 'SW', 'SW', 'W' , 'NW', 'N'];
+             //   nesw.dirs = ['N', 'N', 'NE', 'E', 'E', 'NE', 'NW', 'W', 'W', 'SW', 'W', 'W', 'NW'];
+               // ERR nesw.dirs = ['S', 'S', 'SE', 'E', 'E', 'NE', 'N', 'N', 'NW', 'W', 'W', 'SW'];
+                //nesw.dirs = ['NW', 'NE', 'SE', 'SW'];
+                nesw.posOnGrig = {x: 5, y: 7};
+                nesw.render();
+                shapes.push(nesw);
+
+                var nesw = new NESW();
+                nesw.step = 50;
+                nesw.dirs = ['NW', 'NE', 'SE', 'SW'];
+                //nesw.dirs = ['NE', 'NW', 'NE', 'SE', 'E', 'E', 'NE', 'SE', 'SW', 'SE', 'SW', 'SE', 'SW', 'NW', 'W', 'W', 'SW', 'NW', 'NE', 'NW'];    
+                nesw.posOnGrig = {x: 6, y: 14};
+                nesw.color = {r: 180, g:  0, b: 80};
+                nesw.render();
+                //shapes.push(nesw);      
+                
+            }            
+            firstUse = false; 
+            drawApi.clear();
+            drawApi.render();    
+            requestAnimFrame2(function () {
+                draw(ctx);
+            });
+        }
+        
+        var newCanvas = $('<canvas/>');
+        $("#workground").append(newCanvas);
+        var canvas = newCanvas[0];
+        canvas.width = 1200;
+        canvas.height = 800;
+        
+        var ctx = canvas.getContext("2d");
+        if (window.requestAnimFrame2 === undefined) {
+            window.requestAnimFrame2 = (function (callback) {
+                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                        function (callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+        }
+     
+       draw(ctx);
+        
+       
+
+        // Draw the ImageData at the given (x,y) coordinates.
+        //ctx.putImageData(imgd, 0, 0);
+
+        
+</script>
+     <script>
+            javascript:(function () {
+                var script = document.createElement('script');
+                script.onload = function () {
+                    var stats = new Stats();
+                    stats.showPanel(0);
+                    document.body.appendChild(stats.dom);
+                    stats.dom.style.position = 'fixed';
+                    stats.dom.style.width = '300px';
+                    stats.dom.style.top = '0px';
+                    stats.dom.style.left = '0px';
+                    requestAnimationFrame(function loop() {
+                        stats.update();
+                        requestAnimationFrame(loop)
+                    });
+                };
+                script.src = '//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
+                document.head.appendChild(script);
+            })()
+        </script>
+
+</html>
+

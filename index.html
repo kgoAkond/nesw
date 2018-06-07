@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="libs/jquery.min.js"></script>
+    </head>
+    <body>
+                <div id="workground" style="width: 1200px; height: 800px; position: fixed; top: 10px; left: 10px; background: blue;"></div>
+    </body>
+    <script src="js/drawApi6.js"></script>
+    <script src="js/nesw4.js"></script>
+    <script src="js/neswUtils2.js"></script>
+    <script src="js/bitUtils.js"></script>
+<script>
+        var x = 1;
+        var firstUse = true;
+        var drawApi = new DrawApi();
+        var cnt = 0;
+        var scale = 1; 
+        var anim = 0;
+        var nesw = new NESW();
+        var nesw2 = new NESW();
+        var nesw3 = new NESW();
+        function test() {
+            newsUtils.modifyDirN(nesw, 2);
+            nesw.render();
+        }
+        function draw (ctx) {
+           
+            if(firstUse) {
+                drawApi.init(ctx);               
+                
+               // nesw.dirs = [1, 'NE', 1, 'NW', 1, 'N', 1, 'NE', 1, 'E', 1, 'SE', 1, 'E', 1, 'NE', 1, 'SE', 1, 'S', 1, 'SW', 1, 'SE', 1, 'SW', 1, 'SE', 1, 'SW', 1, 'NW', 1, 'W', 1, 'W', 1, 'SW', 1, 'NW', 1, 'NE'];                
+                nesw.dirs = [20, 'N', 20, 'NE', 3, 'E', 5, 'NE', 4, 'E', 5, 'SE', 3, 'E', 10, 'SE', 5, 'S', 5, 'E', 5, 'SE', 20, 'S', 20, 'SW', 20, 'W', 20, 'NW'];                
+                nesw.position =  {x: 10, y:  10};
+                nesw.color = {r: 255, g:  180, b: 255};
+
+                nesw2.dirs = [20, 'N', 20, 'NE', 20, 'E', 20, 'SE', 20, 'S', 20, 'SW', 20, 'W', 20, 'NW'];                
+                nesw2.position =  {x: 40, y:  10};
+                nesw2.color = {r: 255, g:  180, b: 255};
+
+                nesw3.dirs = [20, 'N', 20, 'NE', 20, 'E', 20, 'SE', 20, 'S', 20, 'SW', 20, 'W', 20, 'NW'];                
+                nesw3.position =  {x: 80, y:  30};
+                nesw3.color = {r: 255, g:  180, b: 255};
+                
+                nesw3.render();
+                nesw2.render();
+                nesw.render();
+                drawApi.shapes.push(nesw);  
+                //drawApi.shapes.push(nesw2); 
+                //drawApi.shapes.push(nesw3);   
+                
+                
+            }            
+            firstUse = false; 
+            drawApi.clear();
+            
+            /*if( nesw.dirs[22] === 22){
+                anim =-1
+            }
+            if( nesw.dirs[22] === 5){
+                anim = 1
+            }
+            nesw.dirs[0]+=anim;
+            nesw.dirs[22]+=anim;*/
+
+            nesw.render();
+            drawApi.render();
+            requestAnimFrame2(function () {
+                draw(ctx);
+            });
+        }
+        
+        var newCanvas = $('<canvas/>');
+        $("#workground").append(newCanvas);
+        var canvas = newCanvas[0];
+        canvas.width = 1200;
+        canvas.height = 800;
+        var rectCanvas = canvas.getBoundingClientRect();
+        var ctx = canvas.getContext("2d");
+        if (window.requestAnimFrame2 === undefined) {
+            window.requestAnimFrame2 = (function (callback) {
+                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                        function (callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+        }
+        var dd = null;
+        canvas.addEventListener('click', function(event) { 
+            var x = event.pageX - rectCanvas.left,
+                y = event.pageY - rectCanvas.top;
+            var col = drawApi.detectCollision( x, y);
+        }, false);
+        canvas.addEventListener("mousedown", function(event){
+             var x = event.pageX - rectCanvas.left,
+                 y = event.pageY - rectCanvas.top;
+            var shape = drawApi.detectCollision( x, y);
+            if(shape !== null){
+                dd  = { shape: shape, x: x, y:y };
+            }
+        }, false);
+        canvas.addEventListener("mousemove", function(event){
+             var x = event.pageX - rectCanvas.left,
+                 y = event.pageY - rectCanvas.top;
+             var s = drawApi.size;    
+             if(dd !==  null) {
+                 if( Math.abs( x - dd.x) >=s ||  Math.abs( y - dd.y ) >= s ) {
+                     dd.shape.position.x += Math.round( (x - dd.x) / s);
+                     dd.shape.position.y += Math.round( (y - dd.y) / s); 
+                     dd.x = x;
+                     dd.y = y;
+                 }
+                // console.log("mousemove ", dd.shape.position.x, dd.shape.position.y);
+             }
+
+        }, false);
+        canvas.addEventListener("mouseup", function(){
+           // console.log("mouseup");
+            dd = null;
+        }, false);
+       draw(ctx);
+        
+       
+
+        // Draw the ImageData at the given (x,y) coordinates.
+        //ctx.putImageData(imgd, 0, 0);
+
+        
+</script>
+     <script>
+            javascript:(function () {
+                var script = document.createElement('script');
+                script.onload = function () {
+                    var stats = new Stats();
+                    stats.showPanel(0);
+                    document.body.appendChild(stats.dom);
+                    stats.dom.style.position = 'fixed';
+                    stats.dom.style.width = '300px';
+                    stats.dom.style.top = '0px';
+                    stats.dom.style.left = '0px';
+                    requestAnimationFrame(function loop() {
+                        stats.update();
+                        requestAnimationFrame(loop)
+                    });
+                };
+                script.src = '//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
+                document.head.appendChild(script);
+            })()
+        </script>
+        <input type="button" value="run" onclick="test()" style="position: fixed; top: 30px; left: 300px;">change</input>
+</html>
+

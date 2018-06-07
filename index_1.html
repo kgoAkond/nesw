@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    </head>
+    <body>
+                <div id="workground" style="width: 1200px; height: 800px; position: fixed; top: 100px; left: 100px; background: blue;"></div>
+    </body>
+    <script src="js/drawApi3.js"></script>
+    <script src="js/nesw.js"></script>
+<script>
+        var x = 1;
+        var firstUse = true;
+        var drawApi = new DrawApi();
+        var cnt = 0;
+        var shapes = [];
+        var scale = 1; 
+        var grid = new NeswGrid(100, 200);
+        function draw (ctx) {
+           
+            if(firstUse) {
+                drawApi.init(ctx);
+                var nesw = new NESW();
+                nesw.step = 50;
+                nesw.posOnGrig = {x: 8, y: 5};
+                shapes.push(nesw);
+                var nesw = new NESW();
+                nesw.step = 50;
+                nesw.posOnGrig = {x: 7, y: 6};
+                shapes.push(nesw);
+                var nesw = new NESW();               
+                grid.nesw.push(nesw);
+                grid.render();
+                nesw.step = 50;
+                nesw.dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+                nesw.posOnGrig = {x: 6, y: 8};
+                shapes.push(nesw);
+                var nesw = new NESW();
+                nesw.step = 50;
+                nesw.dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+                nesw.posOnGrig = {x: 10, y: 7};
+                shapes.push(nesw);
+            }            
+            firstUse = false; 
+            var step = 100;
+            var i = 0;    
+            var j = 0; 
+            drawApi.clear();                  
+            for(var i = 0; i < shapes.length; i++) {               
+                drawApi.drawNESW( shapes[i] );
+            }
+            drawApi.render();
+            ctx.fillStyle="#FF0000";
+            for(var i = 0, len = grid.grid.length; i != len; i++) {
+                if(grid.grid[i] === 1) {                    
+                    console.log(Math.round(i / 100), (i % 100));
+                    ctx.fillStyle="#FF0000";
+                } else{
+                    ctx.fillStyle="#202020";
+                }
+                ctx.fillRect( Math.round(i / 100) * 25, (i % 100) * 25,10,10);
+            }
+    
+            requestAnimFrame2(function () {
+               // draw(ctx);
+            });
+        }
+        
+        var newCanvas = $('<canvas/>');
+        $("#workground").append(newCanvas);
+        var canvas = newCanvas[0];
+        canvas.width = 1200;
+        canvas.height = 800;
+        
+        var ctx = canvas.getContext("2d");
+        if (window.requestAnimFrame2 === undefined) {
+            window.requestAnimFrame2 = (function (callback) {
+                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                        function (callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+        }
+     
+       draw(ctx);
+        
+       
+
+        // Draw the ImageData at the given (x,y) coordinates.
+        //ctx.putImageData(imgd, 0, 0);
+
+        
+</script>
+     <script>
+            javascript:(function () {
+                var script = document.createElement('script');
+                script.onload = function () {
+                    var stats = new Stats();
+                    stats.showPanel(0);
+                    document.body.appendChild(stats.dom);
+                    stats.dom.style.position = 'fixed';
+                    stats.dom.style.width = '300px';
+                    stats.dom.style.top = '0px';
+                    stats.dom.style.left = '0px';
+                    requestAnimationFrame(function loop() {
+                        stats.update();
+                        requestAnimationFrame(loop)
+                    });
+                };
+                script.src = '//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
+                document.head.appendChild(script);
+            })()
+        </script>
+
+</html>
+
